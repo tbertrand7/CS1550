@@ -13,8 +13,9 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-#include <unistd.h>
 #include <termios.h>
+#include <unistd.h>
+#include <time.h>
 
 typedef unsigned short color_t;    // |15 11|10  5|4  0|
                                    // |red  |green|blue|
@@ -24,9 +25,14 @@ typedef unsigned short color_t;    // |15 11|10  5|4  0|
 #define GMASK(c) (c & 0x07E0) // Green mask
 #define RMASK(c) (c & 0xF800) // Red mask
 
-void clear_screen();
 void init_graphics();
 void exit_graphics();
+void clear_screen();
+char getkey();
+void sleep_ms(long ms);
+void draw_pixel(int x, int y, color_t color);
+void draw_rect(int xl, int yl, int width, int height, color_t c);
+void draw_text(int x, int y, const char *text, color_t c);
 void draw_line(color_t c);
 
 #endif
