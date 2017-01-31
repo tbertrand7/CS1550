@@ -10,7 +10,6 @@
 #include "library.h"
 
 int fid;
-int fid1 = 1;
 color_t *address;
 
 /* Screen size vars */
@@ -30,10 +29,11 @@ void init_graphics()
     }
 
     /* Get screen size and bits per pixel using iotcl */
-    if (!iotcl(fid, FBIOGET_VSCREENINFO, &screen_info) &&
-    		!iotcl(fid, FBIOGET_FSCREENINFO, &fixed_info))
+    if (!ioctl(fid, FBIOGET_VSCREENINFO, &screen_info) &&
+    		!ioctl(fid, FBIOGET_FSCREENINFO, &fixed_info))
     {
 		size = screen_info.yres_virtual * fixed_info.line_length;
+		printf("%d", size);
 
 		address = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fid, 0);
 		if(address == (void *) -1)
@@ -43,10 +43,10 @@ void init_graphics()
 		}
 
 		/* Turn off ICANON and ECHO bits */
-		iotcl(fid, TCGETS, &terminal_info);
-		terminal_info &= ~ICANON;
-		terminal_info &= ~ECHO;
-		iotcl(fid, TCSETS, &terminal_info);
+		ioctl(STDIN_FILENO, TCGETS, &terminal_info);
+		terminal_info.c_lflag &= ~ICANON;
+		terminal_info.c_lflag &= ~ECHO;
+		ioctl(STDIN_FILENO, TCSETS, &terminal_info);
     }
     else
     {
@@ -76,16 +76,16 @@ void sleep_s(unsigned seconds)
 
 void clear_screen() 
 {
-    write(fid1, "\033[2J", 4);  /* This will do the trick for fid1*/
+    write(STDOUT_FILENO, "\033[2J", 8);  /* Clear Screen */
 }
 
 void exit_graphics() 
 {
 	/* Turn off ICANON and ECHO bits */
-	iotcl(fid, TCGETS, &terminal_info);
-	terminal_info &= ICANON;
-	terminal_info &= ECHO;
-	iotcl(fid, TCSETS, &terminal_info);
+	ioctl(STDIN_FILENO, TCGETS, &terminal_info);
+	terminal_info.c_lflag |= ICANON;
+	terminal_info.c_lflag |= ECHO;
+	ioctl(STDIN_FILENO, TCSETS, &terminal_info);
 
 	/* Remove the memory mapping */
     if(munmap(address, size) == -1)

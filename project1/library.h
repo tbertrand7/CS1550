@@ -3,8 +3,8 @@
  * (c) Mohammad H. Mofrad, 2017
  */
 
-#ifndef _LIBRARY_INCLUDED_H
-#define _LIBRARY_INCLUDED_H
+#ifndef _GRAPHICS_INCLUDED_H
+#define _GRAPHICS_INCLUDED_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 #include <termios.h>
 
 typedef unsigned short color_t;    // |15 11|10  5|4  0|
