@@ -155,9 +155,9 @@ void draw_rect(int x1, int y1, int width, int height, color_t c)
 {
 	color_t y_pos=0, x_pos=0;
 
-	for (y_pos=y1; y_pos < (height-y1); y_pos++) //Loop through each row
+	for (y_pos=y1; y_pos < (y1+height); y_pos++) //Loop through each row
 	{
-		for (x_pos=x1; x_pos < (width-x1); x_pos++) //Draw line for each row
+		for (x_pos=x1; x_pos < (x1+width); x_pos++) //Draw line for each row
 		{
 			draw_pixel(x_pos,y_pos,c);
 		}
