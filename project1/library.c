@@ -115,14 +115,28 @@ void sleep_ms(long ms)
 	nanosleep(&t,NULL); //Call nanosleep
 }
 
+/* Draw a pixel of color at position x,y */
 void draw_pixel(int x, int y, color_t color)
 {
-
+	if ((x < screen_info.xres_virtual && x >= 0) &&
+			(y < screen_info.yres_virtual && y >= 0)) //Check if pixel is in screen range
+	{
+		color_t location = (y*screen_info.xres_virtual)+x; //Calculate offset using y and x
+		*(address + location) = RMASK(color) | GMASK(color) | BMASK(color); //Set pixel color
+	}
 }
 
-void draw_rect(int xl, int yl, int width, int height, color_t c)
+void draw_rect(int x1, int y1, int width, int height, color_t c)
 {
+	color_t y_pos=0, x_pos=0;
 
+	for (y_pos=y1; y_pos < (height-y1); y_pos++)
+	{
+		for (x_pos=x1; x_pos < (width-x1); x_pos++)
+		{
+			draw_pixel(x_pos,y_pos,c);
+		}
+	}
 }
 
 void draw_text(int x, int y, const char *text, color_t c)
@@ -130,16 +144,13 @@ void draw_text(int x, int y, const char *text, color_t c)
 
 }
 
-void draw_line(color_t c)
+void draw_line(int y, color_t c)
 {
     /* Print a single line */
+	color_t y_pos = y*fixed_info.line_length;
     color_t off_p = 0;
-    for(off_p =0; off_p < size; off_p++)
+    for(off_p = y_pos ; off_p < (y_pos+fixed_info.line_length); off_p++)
     {
         *(address + off_p) = RMASK(c) | GMASK(c) | BMASK(c);
-        /*
-          printf("Address(0x%08x), Color(0x%04x) B(0x%04x), G(0x%04x), R(0x%04x) \n",
-                (address + off_p), *(address + off_p), BMASK(c), GMASK(c), RMASK(c));
-        */
     }
 }
