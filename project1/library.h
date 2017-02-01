@@ -16,6 +16,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/select.h>
 
 typedef unsigned short color_t;    // |15 11|10  5|4  0|
                                    // |red  |green|blue|

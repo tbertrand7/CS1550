@@ -90,9 +90,33 @@ void clear_screen()
 	write(STDOUT_FILENO, "\033[2J", 4);  /* Clear Screen */
 }
 
+/* Read in character input from user without blocking */
 char getkey()
 {
-	return '0';
+	char input = 0;
+	int retval;
+	struct timeval tv;
+	fd_set rfds;
+
+	FD_ZERO(&rfds);
+	FD_SET(STDIN_FILENO, &rfds);
+
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	retval = select(1, &rfds, NULL, NULL, &tv);
+
+	if (retval == -1)
+	{
+		perror("Error with select()");
+		return(1);
+	}
+	else if (retval)
+	{
+		read(STDIN_FILENO, &input, sizeof(input));
+	}
+
+	return input;
 }
 
 /* Sleep for ms milliseconds using nanosleep */
@@ -126,13 +150,14 @@ void draw_pixel(int x, int y, color_t color)
 	}
 }
 
+/* Draws rectangle starting at x1,y1 with specified width, height, color */
 void draw_rect(int x1, int y1, int width, int height, color_t c)
 {
 	color_t y_pos=0, x_pos=0;
 
-	for (y_pos=y1; y_pos < (height-y1); y_pos++)
+	for (y_pos=y1; y_pos < (height-y1); y_pos++) //Loop through each row
 	{
-		for (x_pos=x1; x_pos < (width-x1); x_pos++)
+		for (x_pos=x1; x_pos < (width-x1); x_pos++) //Draw line for each row
 		{
 			draw_pixel(x_pos,y_pos,c);
 		}
