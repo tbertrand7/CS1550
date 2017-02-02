@@ -1,10 +1,10 @@
 /*
- * CS 1550: Graphics library skeleton code for Qemu VM
- * WARNING: This code is the minimal implementation of the project 1.
- *          It is not intended to serve as a reference implementation.
- *          Following project guidelines, a complete implementation
- *          for this project will contain ~300 lines or more.
- * (c) Mohammad H. Mofrad, 2017
+ * Tom Bertrand
+ * 2/2/2017
+ * COE 1550
+ * Misurda T, Th 11:00
+ * Project 1
+ * Graphics Library
  */
 
 #include "library.h"
@@ -12,8 +12,6 @@
 
 int fid;
 color_t *address;
-
-/* Screen size vars */
 struct fb_var_screeninfo screen_info;
 struct fb_fix_screeninfo fixed_info;
 struct termios terminal_info;
@@ -98,12 +96,15 @@ char getkey()
 	struct timeval tv;
 	fd_set rfds;
 
+	/* Set up fd_set for select */
 	FD_ZERO(&rfds);
 	FD_SET(STDIN_FILENO, &rfds);
 
+	/* Wait 5s before timing out */
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 
+	/* Use select to listen for keypress */
 	retval = select(1, &rfds, NULL, NULL, &tv);
 
 	if (retval == -1)
@@ -111,7 +112,7 @@ char getkey()
 		perror("Error with select()");
 		return(1);
 	}
-	else if (retval)
+	else if (retval) //If keypress, use read to get char
 	{
 		read(STDIN_FILENO, &input, sizeof(input));
 	}
@@ -164,12 +165,32 @@ void draw_rect(int x1, int y1, int width, int height, color_t c)
 	}
 }
 
+/* Draw string of text starting at location x,y */
 void draw_text(int x, int y, const char *text, color_t c)
 {
+	int i = 0;
 
+	/* Loop through input string until null character encountered */
+	while ((char)*(text+i) != '\0')
+	{
+		draw_char(x+(10*i), y, (char)*(text+i), c);
+		i++;
+	}
 }
 
-void draw_char(int x, int y, char c, color_t c)
+/* Draw individual character on screen at location x,y */
+void draw_char(int x, int y, char c, color_t color)
 {
-	
+	int i, j;
+
+	/* Loop through 2D array for characters in iso_font.h */
+	for (i=0; i < 16; i++)
+	{
+		int loc = ((int)c*16 + i);
+		for (j=0; j < 8; j++)
+		{
+			if (iso_font[loc] & (0x1 << j))
+				draw_pixel(x+j, y+i, color);
+		}
+	}
 }
