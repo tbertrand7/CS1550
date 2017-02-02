@@ -36,7 +36,7 @@ void init_graphics()
     {
 		size = screen_info.yres_virtual * fixed_info.line_length;
 
-		address = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fid, 0);
+		address = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fid, 0);
 		if(address == (void *) -1)
 		{
 			perror("Error mapping memory");
@@ -145,7 +145,7 @@ void draw_pixel(int x, int y, color_t color)
 	if ((x < screen_info.xres_virtual && x >= 0) &&
 			(y < screen_info.yres_virtual && y >= 0)) //Check if pixel is in screen range
 	{
-		color_t location = (y*screen_info.xres_virtual)+x; //Calculate offset using y and x
+		int location = (y*screen_info.xres_virtual)+x; //Calculate offset using y and x
 		*(address + location) = RMASK(color) | GMASK(color) | BMASK(color); //Set pixel color
 	}
 }
@@ -169,13 +169,7 @@ void draw_text(int x, int y, const char *text, color_t c)
 
 }
 
-void draw_line(int y, color_t c)
+void draw_char(int x, int y, char c, color_t c)
 {
-    /* Print a single line */
-	color_t y_pos = y*fixed_info.line_length;
-    color_t off_p = 0;
-    for(off_p = y_pos ; off_p < (y_pos+fixed_info.line_length); off_p++)
-    {
-        *(address + off_p) = RMASK(c) | GMASK(c) | BMASK(c);
-    }
+	
 }
