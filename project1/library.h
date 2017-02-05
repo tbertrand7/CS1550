@@ -1,7 +1,12 @@
-/* 
+/*
+ * Tom Bertrand
+ * 2/2/2017
+ * COE 1550
+ * Misurda T, Th 11:00
+ * Project 1
  * Graphics Library header file
- * (c) Mohammad H. Mofrad, 2017
  */
+
 
 #ifndef _GRAPHICS_INCLUDED_H
 #define _GRAPHICS_INCLUDED_H

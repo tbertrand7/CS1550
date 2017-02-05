@@ -173,7 +173,7 @@ void draw_text(int x, int y, const char *text, color_t c)
 	/* Loop through input string until null character encountered */
 	while ((char)*(text+i) != '\0')
 	{
-		draw_char(x+(10*i), y, (char)*(text+i), c);
+		draw_char(x+(9*i), y, (char)*(text+i), c);
 		i++;
 	}
 }
