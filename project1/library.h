@@ -11,9 +11,6 @@
 #ifndef _GRAPHICS_INCLUDED_H
 #define _GRAPHICS_INCLUDED_H
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include <linux/fb.h>
 #include <fcntl.h>
 #include <sys/mman.h>

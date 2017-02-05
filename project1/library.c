@@ -24,8 +24,9 @@ void init_graphics()
 	fid = open("/dev/fb0", O_RDWR);
 	if(fid == -1)
     {
-        perror("Error opening /dev/fb0");
-        exit(1);
+    	const char msg[] = "Error opening /dev/fb0";
+        write(STDERR_FILENO, msg, sizeof(msg)-1);
+        _exit(1);
     }
 
     /* Get screen size and bits per pixel using iotcl */
@@ -37,8 +38,9 @@ void init_graphics()
 		address = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fid, 0);
 		if(address == (void *) -1)
 		{
-			perror("Error mapping memory");
-			exit(1);
+			const char msg[] = "Error mapping memory";
+			write(STDERR_FILENO, msg, sizeof(msg)-1);
+			_exit(1);
 		}
 
 		/* Turn off ICANON and ECHO bits */
@@ -49,8 +51,9 @@ void init_graphics()
     }
     else
     {
-    	perror("Error retrieving screen size");
-    	exit(1);
+    	const char msg[] = "Error retrieving screen size";
+    	write(STDERR_FILENO, msg, sizeof(msg)-1);
+    	_exit(1);
     }
 }
 
@@ -66,19 +69,21 @@ void exit_graphics()
 	/* Remove the memory mapping */
     if(munmap(address, size) == -1)
     {
-        perror("Error unmapping memory");
-        exit(1);
+    	const char msg[] = "Error unmapping memory";
+        write(STDERR_FILENO, msg, sizeof(msg)-1);
+        _exit(1);
     }
 
     /* Close the fb file descriptor */
     if(!close(fid))
     {
-        exit(0);
+        _exit(0);
     }
     else
     {
-        perror("Error closing /dev/fb0");
-        exit(1);
+    	const char msg[] = "Error closing /dev/fb0";
+        write(STDERR_FILENO, msg, sizeof(msg)-1);
+        _exit(1);
     }
 }
 
@@ -109,7 +114,8 @@ char getkey()
 
 	if (retval == -1)
 	{
-		perror("Error with select()");
+		const char msg[] = "Error with select()";
+		write(STDERR_FILENO, msg, sizeof(msg)-1);
 		return(1);
 	}
 	else if (retval) //If keypress, use read to get char
