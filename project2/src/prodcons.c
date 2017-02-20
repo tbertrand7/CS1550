@@ -19,7 +19,7 @@
 void *BASE_PTR;
 int *CURR_PTR;
 
-void main(int aegc, char *argv[])
+void main(int argc, char *argv[])
 {
      if (argc != 4)
      {
@@ -64,7 +64,7 @@ struct cs1550_sem* cs1550_sem_init(int val)
      struct cs1550_sem *sem = (struct cs1550_sem *) CURR_PTR;
 
      //Set initial semaphore values
-     sem->value = val
+     sem->value = val;
      sem->start = NULL;
      sem->end = NULL;
 
