@@ -2358,22 +2358,88 @@ int orderly_poweroff(bool force)
 }
 
 /* Added by Mohammd H. Mofrad */
+/* Modified by Tom Bertrand */
 /* START */
+DEFINE_SPINLOCK(sem_lock); // Create a spinlock
+
 asmlinkage long sys_cs1550_down(struct cs1550_sem *sem) 
 {
-     printk(KERN_WARNING "semaphore value (current)         %d\n", sem->value);
-     sem->value--;
-     printk(KERN_WARNING "Semaphore value (after decrement) %d\n", sem->value);
-     return 0;
+	spin_lock(&sem_lock); //Enter spinlock
+
+    printk(KERN_WARNING "semaphore value (current)         %d\n", sem->value);
+    sem->value--;
+    printk(KERN_WARNING "Semaphore value (after decrement) %d\n", sem->value);
+
+    //Cause current process to sleep and place reference in queue
+    if (sem->value < 0)
+    {
+    	//Create node for process
+    	struct Node *cur_proc = (struct Node*)kmalloc(sizeof(struct Node), GFP_KERNEL);
+    	cur_proc->task = current;
+    	cur_proc->next = NULL;
+
+    	//Add node to linked list
+    	if (sem->start != NULL)
+    	{
+    		sem->end->next = cur_proc;
+    	}
+    	else
+    	{
+    		sem->start = cur_proc;
+    	}
+    	sem->end = cur_proc;
+
+    	//Cause current process to sleep and schedule new process
+    	set_current_state(TASK_INTERRUPTIBLE);
+    	spin_unlock(&sem_lock); //Release spinlock before scheduling new process
+    	schedule();
+    }
+    else
+    {
+    	spin_unlock(&sem_lock) //Release spinlock
+    }
+
+    return 0;
 }
 
 
 asmlinkage long sys_cs1550_up(struct cs1550_sem *sem) 
 {
-     printk(KERN_WARNING "semaphore value (current)         %d\n", sem->value);
-     sem->value++;
-     printk(KERN_WARNING "Semaphore value (after increment) %d\n", sem->value);
-     return 0;
+	spin_lock(&sem_lock); //Enter spinlock
+
+    printk(KERN_WARNING "semaphore value (current)         %d\n", sem->value);
+    sem->value++;
+    printk(KERN_WARNING "Semaphore value (after increment) %d\n", sem->value);
+
+    //Wake up sleeping process from queue
+    if (sem->value <= 0)
+    {
+    	struct Node *head; //pointer to head of sleeping processes queue
+
+    	if (sem->start != NULL) //Check for sleeping processes in queue
+    	{
+    		head = sem->start;
+
+    		//Dequeue process in head of queue
+    		if (sem->start == sem->end)
+    		{
+    			sem->start = NULL;
+    			sem->end = NULL;
+    		}
+    		else
+    		{
+    			sem->start = head->next;
+    		}
+
+    		//Wake up process
+    		wake_up_process(head->task);
+    		kfree(head->task);
+    	}
+    }
+
+    spin_unlock(&sem_lock) //Release spinlock
+
+    return 0;
 }
 /* END */
 
