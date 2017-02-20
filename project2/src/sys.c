@@ -2396,7 +2396,7 @@ asmlinkage long sys_cs1550_down(struct cs1550_sem *sem)
     }
     else
     {
-    	spin_unlock(&sem_lock) //Release spinlock
+    	spin_unlock(&sem_lock); //Release spinlock
     }
 
     return 0;
@@ -2437,7 +2437,7 @@ asmlinkage long sys_cs1550_up(struct cs1550_sem *sem)
     	}
     }
 
-    spin_unlock(&sem_lock) //Release spinlock
+    spin_unlock(&sem_lock); //Release spinlock
 
     return 0;
 }
