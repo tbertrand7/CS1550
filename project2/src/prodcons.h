@@ -35,7 +35,8 @@ struct cs1550_sem
    struct Node *end; //End address of sleeping process queue
 };
 
-struct cs1550_sem* cs1550_sem_init(int *sem_ptr, int value);
+struct cs1550_sem* cs1550_sem_init(int val);
+int* increment_sem_address(int *curr_ptr);
 
 void  cs1550_down(struct cs1550_sem *);
 void  cs1550_up  (struct cs1550_sem *);
