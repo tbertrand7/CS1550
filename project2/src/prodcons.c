@@ -61,8 +61,8 @@ void main(int argc, char *argv[])
      /* Shared pointers for producers and consumers */
      int *buffer_ptr = (int *)BUFFER_PTR;
      int *buffer_size_ptr = (int *)SHARED_VARS_PTR;
-     int *producer_ptr = (int *)SHARED_VARS_PTR + 1;
-     int *consumer_ptr = (int *)SHARED_VARS_PTR + 2;
+     int *producer_ptr = buffer_size_ptr + 1;
+     int *consumer_ptr = buffer_size_ptr + 2;
 
      /* Initialize shared variable values*/
      *buffer_size_ptr = buffer_size;
@@ -91,8 +91,7 @@ void main(int argc, char *argv[])
                     item = *producer_ptr; //Get next sequential int for buffer
                     buffer_ptr[*producer_ptr % *buffer_size_ptr] = item; //Use mod to produce within buffer bounds
                     printf("Producer %c Produced: %d\n", i+65, item);
-                    sleep(1);
-                    *producer_ptr++; //Increment producer_ptr
+                    *producer_ptr = *producer_ptr + 1; //Increment producer_ptr
 
                     cs1550_up(mutex); //Release mutex
                     cs1550_up(full);
@@ -115,7 +114,6 @@ void main(int argc, char *argv[])
 
                     item = buffer_ptr[*consumer_ptr]; //Retrieve next int from buffer
                     printf("Consumer %c Consumed: %d\n", i+65, item);
-                    sleep(1);
                     *consumer_ptr = (*consumer_ptr + 1) % *buffer_size_ptr; //Increment consumer_ptr to next buffer location
 
                     cs1550_up(mutex); //Release mutex
