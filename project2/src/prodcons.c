@@ -43,8 +43,8 @@ void main(int argc, char *argv[])
      CURR_PTR = BASE_PTR; //Initialize CURR_PTR to start of map
 
      /* Initialize semaphores */
-     struct cs1550_sem *empty = cs1550_sem_init(0);
-     struct cs1550_sem *full = cs1550_sem_init(buffer_size);
+     struct cs1550_sem *empty = cs1550_sem_init(buffer_size);
+     struct cs1550_sem *full = cs1550_sem_init(0);
      struct cs1550_sem *mutex = cs1550_sem_init(1);
 
      /* Allocate memory for the shared buffer */
