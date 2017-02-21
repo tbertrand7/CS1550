@@ -90,7 +90,7 @@ void main(int argc, char *argv[])
 
                     item = *producer_ptr; //Get next sequential int for buffer
                     buffer_ptr[*producer_ptr % *buffer_size_ptr] = *producer_ptr; //Use mod to produce within buffer bounds
-                    *producer_ptr = *producer_ptr++; //Increment producer ptr
+                    *producer_ptr = *producer_ptr++; //Increment producer_ptr
 
                     cs1550_up(mutex); //Release mutex
                     cs1550_up(full);
@@ -102,7 +102,22 @@ void main(int argc, char *argv[])
      //Create consumer threads
      for (i=0; i < num_consumers; i++)
      {
-          //TODO: Create consumer threads
+          if (fork() == 0)
+          {
+               int item;
+
+               while(1)
+               {
+                    cs1550_down(full);
+                    cs1550_down(mutex); //Enter mutex
+
+                    item = buffer_ptr[*consumer_ptr]; //Retrieve next int from buffer
+                    *consumer_ptr = (*consumer_ptr++) % *buffer_size_ptr; //Increment consumer_ptr to next buffer location
+
+                    cs1550_up(mutex); //Release mutex
+                    cs1550_up(empty);
+               }
+          }
      }
 }
 
