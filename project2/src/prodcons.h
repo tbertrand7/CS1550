@@ -36,7 +36,7 @@ struct cs1550_sem
 };
 
 struct cs1550_sem* cs1550_sem_init(int val);
-int* increment_sem_address(int *curr_ptr);
+int* check_sem_address(int *curr_ptr);
 
 void  cs1550_down(struct cs1550_sem *);
 void  cs1550_up  (struct cs1550_sem *);

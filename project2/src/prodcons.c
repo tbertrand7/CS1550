@@ -59,9 +59,11 @@ void main(int argc, char *argv[])
 /* Initialize cs1550_sem */
 struct cs1550_sem* cs1550_sem_init(int val)
 {
-     //Get address for semaphore
-     CURR_PTR = increment_sem_address(CURR_PTR);
+     //Check address for semaphore
+     CURR_PTR = check_sem_address(CURR_PTR);
      struct cs1550_sem *sem = (struct cs1550_sem *) CURR_PTR;
+
+     CURR_PTR = CURR_PTR + sizeof(struct cs1550_sem); //Increase pointer for next semaphore
 
      //Set initial semaphore values
      sem->value = val;
@@ -71,8 +73,8 @@ struct cs1550_sem* cs1550_sem_init(int val)
      return sem;
 }
 
-/* Get next sequential pointer for the semaphores */
-int* increment_sem_address(int *curr_ptr)
+/* Check pointer for the semaphore is within the map range */
+int* check_sem_address(int *curr_ptr)
 {
      int *base_ptr = BASE_PTR;
      int *new_ptr;
