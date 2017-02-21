@@ -2429,7 +2429,7 @@ asmlinkage long sys_cs1550_up(struct cs1550_sem *sem)
 
     		//Wake up process
     		wake_up_process(head->task);
-    		kfree(head->task);
+    		kfree(head);
     	}
     }
 
