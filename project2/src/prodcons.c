@@ -56,10 +56,10 @@ void main(int argc, char *argv[])
      }
 
      /* Allocate memory for the shared variables */
-     SHARED_VARS_PTR = (void *) mmap(NULL, sizeof(int)*4, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, 0, 0);
+     SHARED_VARS_PTR = (void *) mmap(NULL, sizeof(int)*3, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, 0, 0);
 
      /* Shared pointers for producers and consumers */
-     int *buffer_ptr = (int *)SHARED_VARS_PTR;
+     int *buffer_ptr = (int *)BUFFER_PTR;
      int *buffer_size_ptr = (int *)SHARED_VARS_PTR + 1;
      int *producer_ptr = (int *)SHARED_VARS_PTR + 2;
      int *consumer_ptr = (int *)SHARED_VARS_PTR + 3;
@@ -73,7 +73,7 @@ void main(int argc, char *argv[])
      //Initialize buffer to 0s
      for (i=0; i < buffer_size; i++)
      {
-          BUFFER_PTR[i] = 0;
+          buffer_ptr[i] = 0;
      }
 
      //Create producer threads
