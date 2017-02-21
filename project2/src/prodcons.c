@@ -91,6 +91,7 @@ void main(int argc, char *argv[])
                     item = *producer_ptr; //Get next sequential int for buffer
                     buffer_ptr[*producer_ptr % *buffer_size_ptr] = item; //Use mod to produce within buffer bounds
                     printf("Producer %c Produced: %d\n", i+65, item);
+                    sleep(2);
                     *producer_ptr = *producer_ptr++; //Increment producer_ptr
 
                     cs1550_up(mutex); //Release mutex
@@ -114,6 +115,7 @@ void main(int argc, char *argv[])
 
                     item = buffer_ptr[*consumer_ptr]; //Retrieve next int from buffer
                     printf("Consumer %c Consumed: %d\n", i+65, item);
+                    sleep(2);
                     *consumer_ptr = (*consumer_ptr++) % *buffer_size_ptr; //Increment consumer_ptr to next buffer location
 
                     cs1550_up(mutex); //Release mutex
