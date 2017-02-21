@@ -79,7 +79,23 @@ void main(int argc, char *argv[])
      //Create producer threads
      for (i=0; i < num_producers; i++)
      {
-          //TODO: Create producer threads
+          if (fork() == 0)
+          {
+               int item;
+
+               while(1)
+               {
+                    cs1550_down(empty);
+                    cs1550_down(mutex); //Enter mutex
+
+                    item = *producer_ptr; //Get next sequential int for buffer
+                    buffer_ptr[*producer_ptr % *buffer_size_ptr] = *producer_ptr; //Use mod to produce within buffer bounds
+                    *producer_ptr = *producer_ptr++; //Increment producer ptr
+
+                    cs1550_up(mutex); //Release mutex
+                    cs1550_up(full);
+               }
+          }
      }
 
 
@@ -88,16 +104,6 @@ void main(int argc, char *argv[])
      {
           //TODO: Create consumer threads
      }
-
-     /*printf("Base pointer (0x%08x), Current pointer (0x%08x), New pointer (0x%08x)\n", base_ptr, curr_ptr, new_ptr);
-     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
-     cs1550_down(full);
-     sleep(5);
-     printf("Semaphore value (%d)\n", full->value);
-     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
-     cs1550_up(full);
-     printf("Semaphore value (%d)\n", full->value);
-     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);*/
 }
 
 /* Initialize cs1550_sem */
