@@ -17,6 +17,8 @@
 #include <linux/prodcons.h>
 
 void *BASE_PTR;
+void *BUFFER_PTR;
+void *SHARED_VARS_PTR;
 int *CURR_PTR;
 
 void main(int argc, char *argv[])
@@ -44,16 +46,58 @@ void main(int argc, char *argv[])
      struct cs1550_sem *empty = cs1550_sem_init(0);
      struct cs1550_sem *full = cs1550_sem_init(buffer_size);
      struct cs1550_sem *mutex = cs1550_sem_init(1);
+
+     /* Allocate memory for the shared buffer */
+     BUFFER_PTR = (void *) mmap(NULL, sizeof(int)*buffer_size, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, 0, 0);
+     if(BUFFER_PTR == (void *) -1) 
+     {
+          fprintf(stderr, "Error mapping buffer memory\n");
+          exit(1);
+     }
+
+     /* Allocate memory for the shared variables */
+     SHARED_VARS_PTR = (void *) mmap(NULL, sizeof(int)*4, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, 0, 0);
+
+     /* Shared pointers for producers and consumers */
+     int *buffer_ptr = (int *)SHARED_VARS_PTR;
+     int *buffer_size_ptr = (int *)SHARED_VARS_PTR + 1;
+     int *producer_ptr = (int *)SHARED_VARS_PTR + 2;
+     int *consumer_ptr = (int *)SHARED_VARS_PTR + 3;
+
+     /* Initialize shared variable values*/
+     *buffer_size_ptr = buffer_size;
+     *producer_ptr = 0;
+     *consumer_ptr = 0;
      
-     //printf("Base pointer (0x%08x), Current pointer (0x%08x), New pointer (0x%08x)\n", base_ptr, curr_ptr, new_ptr);
-     //printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
+     int i;
+     //Initialize buffer to 0s
+     for (i=0; i < buffer_size; i++)
+     {
+          BUFFER_PTR[i] = 0;
+     }
+
+     //Create producer threads
+     for (i=0; i < num_producers; i++)
+     {
+          //TODO: Create producer threads
+     }
+
+
+     //Create consumer threads
+     for (i=0; i < num_consumers; i++)
+     {
+          //TODO: Create consumer threads
+     }
+
+     /*printf("Base pointer (0x%08x), Current pointer (0x%08x), New pointer (0x%08x)\n", base_ptr, curr_ptr, new_ptr);
+     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
      cs1550_down(full);
      sleep(5);
      printf("Semaphore value (%d)\n", full->value);
-     //printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
+     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
      cs1550_up(full);
      printf("Semaphore value (%d)\n", full->value);
-     //printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);
+     printf("Base pointer (%d), Current pointer (%d), New pointer (%d)\n", *base_ptr, *curr_ptr, *new_ptr);*/
 }
 
 /* Initialize cs1550_sem */
