@@ -89,9 +89,10 @@ void main(int argc, char *argv[])
                     cs1550_down(mutex); //Enter mutex
 
                     item = *producer_ptr; //Get next sequential int for buffer
-                    buffer_ptr[*producer_ptr % *buffer_size_ptr] = item; //Use mod to produce within buffer bounds
-                    printf("Producer %c Produced: %d\n", i+65, item);
-                    *producer_ptr = *producer_ptr + 1; //Increment producer_ptr
+                    buffer_ptr[*producer_ptr] = item; //Use mod to produce within buffer bounds
+                    printf("Producer %c Produced: %d\n", i+65, item); //Add 65 for Ascii character representation
+                    usleep(5000); //Slows down terminal output for easier readability
+                    *producer_ptr = (*producer_ptr + 1) % *buffer_size_ptr; //Increment producer_ptr to next buffer location
 
                     cs1550_up(mutex); //Release mutex
                     cs1550_up(full);
@@ -113,7 +114,8 @@ void main(int argc, char *argv[])
                     cs1550_down(mutex); //Enter mutex
 
                     item = buffer_ptr[*consumer_ptr]; //Retrieve next int from buffer
-                    printf("Consumer %c Consumed: %d\n", i+65, item);
+                    printf("Consumer %c Consumed: %d\n", i+65, item); //Add 65 for Ascii character representation
+                    usleep(5000); //Slows down terminal output for easier readability
                     *consumer_ptr = (*consumer_ptr + 1) % *buffer_size_ptr; //Increment consumer_ptr to next buffer location
 
                     cs1550_up(mutex); //Release mutex
