@@ -1,61 +1,58 @@
-# 1. Fast Build Script (build.sh)
-<p>A script for adding syscalls to Linux (compatible with linux-2.6.23.1).</p>
-<p>See project details at http://people.cs.pitt.edu/~jmisurda/teaching/cs1550/2174/cs1550-2174-project2.htm</p>
-<p>Login to thoth:</p>
-<ul>
-  <li>ssh username@thoth.cs.pitt.edu</li>
-</ul>
-<p>Navigate to your working directory:</p>
-<ul>
-  <li>cd /u/OSLab/username/WORKING_DIR</li>
-</ul>
-<p>Give execute permission to the script:</p>
-<ul>
-  <li>chmod +x build.sh</li>
-</ul>
-<p>Run the script:</p>
-<ul>
-  <li>./build.sh</li>
-</ul>
+## 1. Fast Build Script (build.sh)
+A script for adding syscalls to Linux (compatible with linux-2.6.23.1). See project details [here](http://people.cs.pitt.edu/~jmisurda/teaching/cs1550/2174/cs1550-2174-project2.htm).
 
+Login to thoth:
 
+* ssh username@thoth.cs.pitt.edu
 
-# 2. Fast Boot Script (boot.sh)
-<p>Login to Qemu VM:</p>
-<ul>
-  <li>Username: root</li>
-  <li>Password: root</li>
-</ul>
-<p>Copy fast boot script:</p>
-<ul>
-  <li>scp username@thoth.cs.pitt.edu:/u/OSLab/username/WORKING_DIR/boot.sh .</li>
-</ul>
-<p>Within boot.sh change the scp target directory based on your working directory on thoth (line #26):</p>
-<ul>
-  <li>scp $1@thoth.cs.pitt.edu:/u/OSLab/$1/{CHANGE_ACCORDINGLY}/...</li>
-</ul>
-<p>Give execute permission to the script:</p>
-<ul>
-  <li>chmod +x boot.sh</li>
-</ul>
-<p>Run the script:</p>
-<ul>
-  <li>./boot.sh username (e.g. ./boot.sh moh18)</li>
-</ul>
-<p>Reboot Qemu VM</p>
-<ul>
-  <li>reboot</li>
-</ul>
-<p>Select Linux (devel) from boot loader menu</p>
-<ul>
-  <li>Hit enter</li>
-</ul>
-<p>Run prodcons binary:</p>
+Navigate to your working directory:
 
-<ul>
-  <li>./prodcons</li>
-  <li>And you will see a semaphore increment followed by a decrement</li>
-</ul>
+* cd /u/OSLab/username/WORKING_DIR
 
+Give execute permission to the script:
 
-###Don't forget to report bugs to moh18@pitt.edu.
+* chmod +x build.sh
+
+Run the script:
+
+* ./build.sh
+
+## 2. Fast Boot Script (boot.sh)
+Login to Qemu VM:
+
+* Username: root
+
+* Password: root
+
+Copy fast boot script:
+
+* scp username@thoth.cs.pitt.edu:/u/OSLab/username/WORKING_DIR/boot.sh.
+
+Within boot.sh change the scp target directory based on your working directory on thoth (line #26):
+
+* scp $1@thoth.cs.pitt.edu:/u/OSLab/$1/{CHANGE_ACCORDINGLY}/...
+
+Give execute permission to the script:
+
+* chmod +x boot.sh
+
+Run the script:
+
+* ./boot.sh username (e.g. ./boot.sh moh18)
+
+Reboot Qemu VM
+
+* reboot
+
+Select Linux (devel) from boot loader menu
+
+* Hit Enter
+
+Run prodcons binary:
+
+* ./prodcons
+
+And you will see a semaphore increment followed by a decrement
+
+## Report bugs
+* Report your bugs to moh18@pitt.edu.
