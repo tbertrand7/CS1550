@@ -57,7 +57,11 @@ struct pte_32
 // Handle page fault function
 struct frame_struct * handle_page_fault(unsigned int);
 
-// Fifo page replacement algorithm
+// Page replacement algorithms
 int fifo();
+int opt();
+int clock();
+int nru();
+int rand();
 
 #endif

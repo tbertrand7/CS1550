@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
    */
    
    FILE *file;
-   if((argc == 6) && (!strcmp(argv[1],"-n")) && (!strcmp(argv[3], "-a")) && (!strcmp(argv[4], "fifo")) \
+   if((argc == 6) && (!strcmp(argv[1],"-n")) && (!strcmp(argv[3], "-a")) \
+                  && (!strcmp(argv[4], "fifo") || !strcmp(argv[4], "opt") || !strcmp(argv[4], "clock") || !strcmp(argv[4], "nru") || !strcmp(argv[4], "rand")) \
                   && ((!strcmp(argv[5], "gcc.trace")) || (!strcmp(argv[5], "bzip.trace"))))
    {
       numframes = atoi(argv[2]);
@@ -198,6 +199,22 @@ int main(int argc, char *argv[])
          {
             page2evict = fifo();
          }
+         else if(!strcmp(argv[4], "opt"))
+         {
+            page2evict = opt();
+         }
+         else if(!strcmp(argv[4], "clock"))
+         {
+            page2evict = clock();
+         }
+         else if(!strcmp(argv[4], "nru"))
+         {
+            page2evict = nru();
+         }
+         else if (!strcmp(argv[4], "rand"))
+         {
+            page2evict = rand();
+         }
 
          /* Traverse the frames linked list to
           * find the victim frame and swap it out
@@ -299,4 +316,24 @@ int fifo()
    current_index++;
    current_index = current_index % numframes;            
    return (current_index);
+}
+
+int opt()
+{
+
+}
+
+int clock()
+{
+
+}
+
+int nru()
+{
+
+}
+
+int rand()
+{
+
 }
