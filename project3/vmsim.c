@@ -1,7 +1,13 @@
-/*
- * CS 1550: Source file for Virtual Memory skeleton code
- * with a single level 32-Bit page table and
- * fifo page replacement algorithm
+/* 
+ * Tom Bertrand
+ * 3/28/2017
+ * COE 1550
+ * Misurda T, Th 11:00
+ * Project 3
+ * Virtual Memory with a single level 32-Bit page table and
+ * opt, nru, random, and clock page replacement algorithms
+ *
+ * Built using skeleton code from:
  * (c) Mohammad H. Mofrad, 2017
  * (e) hasanzadeh@cs.pitt.edu
  */
@@ -13,7 +19,7 @@
 #undef DEBUG
 #undef INFO
 
-int numframes;
+int numframes, refresh;
 unsigned int *physical_frames;
 
 // Page Table
@@ -38,6 +44,7 @@ int main(int argc, char *argv[])
                   && ((!strcmp(argv[5], "gcc.trace")) || (!strcmp(argv[5], "bzip.trace"))))
    {
       numframes = atoi(argv[2]);
+      refresh = 100;
       file = fopen(argv[5],"rb");
       if(!file)
       {
@@ -149,6 +156,9 @@ int main(int argc, char *argv[])
    int page2evict = 0;
    int numfaults = 0;
    int numwrites = 0;
+
+   srand(time(NULL)); //Seed rand
+
    //numaccesses = 100;
    // Main loop to process memory accesses
    for(i = 0; i < numaccesses; i++)
@@ -157,6 +167,17 @@ int main(int argc, char *argv[])
       mode_type = mode_array[i];
       hit = 0;
     
+      //Refresh pages based on refresh rate for nru
+      if (!(i % refresh) && strcmp(argv[4], "nru"))
+      {
+         curr = head;
+         while(curr->next)
+         {
+            curr->pte_pointer->referenced = 0;
+            curr = curr->next;
+         }
+      }
+
       // Perform the page walk for the fault address
       new_pte = (struct pte_32 *) handle_page_fault(fault_address);
       
@@ -174,6 +195,7 @@ int main(int argc, char *argv[])
             if(new_pte->present)
             {
                curr->virtual_address = fault_address;
+               curr->pte_pointer->referenced = 1;
                hit = 1;
             }
             break;
@@ -194,26 +216,26 @@ int main(int argc, char *argv[])
 
       if(!hit)
       {
-         // Fifo page replacement algorithm
+         //Determine page replacement algorithm
          if(!strcmp(argv[4], "fifo"))
          {
             page2evict = fifo();
          }
          else if(!strcmp(argv[4], "opt"))
          {
-            page2evict = opt();
+            page2evict = opt_alg();
          }
          else if(!strcmp(argv[4], "clock"))
          {
-            page2evict = clock();
+            page2evict = clock_alg();
          }
          else if(!strcmp(argv[4], "nru"))
          {
-            page2evict = nru();
+            page2evict = nru_alg();
          }
          else if (!strcmp(argv[4], "rand"))
          {
-            page2evict = rand();
+            page2evict = rand_alg();
          }
 
          /* Traverse the frames linked list to
@@ -234,6 +256,10 @@ int main(int argc, char *argv[])
                if(curr->pte_pointer)
                {
                   curr->pte_pointer->present = 0;
+
+                  if (curr->pte_pointer->referenced)
+                     curr->pte_pointer->referenced = 0;
+
                   if(curr->pte_pointer->dirty)
                   {
                      curr->pte_pointer->dirty = 0;
@@ -318,22 +344,23 @@ int fifo()
    return (current_index);
 }
 
-int opt()
+int opt_alg()
 {
 
 }
 
-int clock()
+int clock_alg()
 {
 
 }
 
-int nru()
+int nru_alg()
 {
 
 }
 
-int rand()
+/* Random replacement */
+int rand_alg()
 {
-
+   return (rand() % numframes);
 }

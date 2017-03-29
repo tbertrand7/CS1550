@@ -1,7 +1,13 @@
-/*
- * CS 1550: Header file for Virtual Memory skeleton code
- * with a single level 32-Bit page table and
- * fifo page replacement algorithm
+/* 
+ * Tom Bertrand
+ * 3/28/2017
+ * COE 1550
+ * Misurda T, Th 11:00
+ * Project 3
+ * Virtual Memory with a single level 32-Bit page table and
+ * opt, nru, random, and clock page replacement algorithms
+ *
+ * Built using skeleton code from:
  * (c) Mohammad H. Mofrad, 2017
  * (e) hasanzadeh@cs.pitt.edu
  *
@@ -20,6 +26,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 
 // Debug levels
 #define ALL
@@ -51,6 +58,7 @@ struct pte_32
 {
    unsigned int present;
    unsigned int dirty;
+   unsigned int referenced;
    unsigned int *physical_address;
 };
 
@@ -58,10 +66,10 @@ struct pte_32
 struct frame_struct * handle_page_fault(unsigned int);
 
 // Page replacement algorithms
-int fifo();
-int opt();
-int clock();
-int nru();
-int rand();
+int fifo_alg();
+int opt_alg();
+int clock_alg();
+int nru_alg();
+int rand_alg();
 
 #endif
