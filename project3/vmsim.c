@@ -159,7 +159,6 @@ int main(int argc, char *argv[])
 
    srand(time(NULL)); //Seed rand
 
-   //numaccesses = 100;
    // Main loop to process memory accesses
    for(i = 0; i < numaccesses; i++)
    {
@@ -168,12 +167,16 @@ int main(int argc, char *argv[])
       hit = 0;
     
       //Refresh pages based on refresh rate for nru
-      if (!(i % refresh) && strcmp(argv[4], "nru"))
+      if (!(i % refresh))
       {
          curr = head;
          while(curr->next)
          {
-            curr->pte_pointer->referenced = 0;
+            if (curr->pte_pointer)
+            {
+               curr->pte_pointer->referenced = 0;
+            }
+
             curr = curr->next;
          }
       }
@@ -258,7 +261,9 @@ int main(int argc, char *argv[])
                   curr->pte_pointer->present = 0;
 
                   if (curr->pte_pointer->referenced)
+                  {
                      curr->pte_pointer->referenced = 0;
+                  }
 
                   if(curr->pte_pointer->dirty)
                   {
