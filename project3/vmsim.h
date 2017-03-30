@@ -46,20 +46,20 @@
 // 32-Bit memory frame data structure
 struct frame_struct
 {
-   unsigned int frame_number;
-   unsigned int *physical_address;
-   unsigned int virtual_address;
-   struct pte_32 *pte_pointer;
-   struct frame_struct *next;
+   	unsigned int frame_number;
+   	unsigned int *physical_address;
+   	unsigned int virtual_address;
+   	struct pte_32 *pte_pointer;
+   	struct frame_struct *next;
 };
 
 // 32-Bit Root level Page Table Entry (PTE) 
 struct pte_32
 {
-   unsigned int present;
-   unsigned int dirty;
-   unsigned int referenced;
-   unsigned int *physical_address;
+   	unsigned int present;
+   	unsigned int dirty;
+   	unsigned int referenced;
+   	unsigned int *physical_address;
 };
 
 // Handle page fault function
@@ -68,8 +68,8 @@ struct frame_struct * handle_page_fault(unsigned int);
 // Page replacement algorithms
 int fifo_alg();
 int opt_alg();
-int clock_alg();
-int nru_alg();
-int rand_alg();
+int clock_alg(struct frame_struct *head);
+int nru_alg(struct frame_struct *head);
+int rand_alg(struct frame_struct *head);
 
 #endif
