@@ -43,22 +43,36 @@ int main(int argc, char *argv[])
 
    FILE *file;
    if((argc == 6) && (!strcmp(argv[1],"-n")) && (!strcmp(argv[3], "-a")) \
-      && (!strcmp(argv[4], "fifo") || !strcmp(argv[4], "opt") || !strcmp(argv[4], "clock") || !strcmp(argv[4], "nru") || !strcmp(argv[4], "rand")) \
+      && (!strcmp(argv[4], "fifo") || !strcmp(argv[4], "opt") || !strcmp(argv[4], "clock") || !strcmp(argv[4], "rand")) \
       && ((!strcmp(argv[5], "gcc.trace")) || (!strcmp(argv[5], "bzip.trace"))))
    {
       numframes = atoi(argv[2]);
-      refresh = 500;
+      refresh = 0;
       file = fopen(argv[5],"rb");
       if(!file)
       {
-         fprintf(stderr, "USAGE: %s -n <numframes> -a <fifo> <tracefile>\n", argv[0]);
+         fprintf(stderr, "USAGE: %s -n <numframes> -a <opt|clock|nru|rand> [-r <refresh>] <tracefile>\n", argv[0]);
+         fprintf(stderr, "Error on opening the trace file\n");
+         exit(1);
+      }
+   }
+   //Special case for nru for refresh arg
+   else if ((argc == 8) && (!strcmp(argv[1],"-n")) && (!strcmp(argv[3], "-a")) && (!strcmp(argv[5], "-r")) \
+      && (!strcmp(argv[4], "nru")) && ((!strcmp(argv[7], "gcc.trace")) || (!strcmp(argv[7], "bzip.trace"))))
+   {
+      numframes = atoi(argv[2]);
+      refresh = atoi(argv[6]);
+      file = fopen(argv[7],"rb");
+      if(!file)
+      {
+         fprintf(stderr, "USAGE: %s -n <numframes> -a <opt|clock|nru|rand> [-r <refresh>] <tracefile>\n", argv[0]);
          fprintf(stderr, "Error on opening the trace file\n");
          exit(1);
       }
    }
    else
    {
-      fprintf(stderr, "USAGE: %s -n <numframes> -a <fifo> <tracefile>\n", argv[0]);
+      fprintf(stderr, "USAGE: %s -n <numframes> -a <opt|clock|nru|rand> [-r <refresh>] <tracefile>\n", argv[0]);
       exit(1);
    }
 
@@ -232,7 +246,7 @@ int main(int argc, char *argv[])
          }
          else if(!strcmp(argv[4], "opt"))
          {
-            page2evict = opt_alg();
+            page2evict = opt_alg(head);
          }
          else if(!strcmp(argv[4], "clock"))
          {
@@ -355,9 +369,22 @@ int fifo()
    return (current_index);
 }
 
-int opt_alg()
+int opt_alg(struct frame_struct *head)
 {
+   struct frame_struct *curr = head;
 
+   //Fill empty frames first
+   while (curr->next)
+   {
+      if (!curr->pte_pointer)
+      {
+         return curr->frame_number;
+      }
+      else
+      {
+         curr = curr->next;
+      }
+   }
 }
 
 /* Clock algorithm implementation */
@@ -382,7 +409,6 @@ int clock_alg(struct frame_struct *head)
          }
          return page2evict;
       }
-
       //Clock is pointing to a page that is not referenced
       else if (!clock_pointer->pte_pointer->referenced)
       {
@@ -398,7 +424,6 @@ int clock_alg(struct frame_struct *head)
          }
          return page2evict;
       }
-
       //Clock is pointing to a referenced page (Second Chance)
       else
       {
