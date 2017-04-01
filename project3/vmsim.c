@@ -33,6 +33,11 @@ int current_index = -1;
 //Pointer for clock
 struct frame_struct *clock_pointer;
 
+//Vars for opt
+int *pages_to_evict; //Holds frame #'s of pages that will never be used again
+int p2e_count = 0; //Count of how many pages are in pages_to_evict stack
+int *counts; //Holds times for when each frame will be used in future
+
 int main(int argc, char *argv[])
 {
    /*
@@ -75,6 +80,11 @@ int main(int argc, char *argv[])
       fprintf(stderr, "USAGE: %s -n <numframes> -a <opt|clock|nru|rand> [-r <refresh>] <tracefile>\n", argv[0]);
       exit(1);
    }
+
+   //Allocate arrays for opt
+   pages_to_evict = malloc(sizeof(int)*numframes);
+   counts = malloc(sizeof(int)*numframes);
+   memset(counts, -1, sizeof(int)*numframes);
 
    /* 
     * Calculate the trace file's length
@@ -246,7 +256,7 @@ int main(int argc, char *argv[])
          }
          else if(!strcmp(argv[4], "opt"))
          {
-            page2evict = opt_alg(head);
+            page2evict = opt_alg(head, i, address_array, numaccesses);
          }
          else if(!strcmp(argv[4], "clock"))
          {
@@ -323,6 +333,9 @@ int main(int argc, char *argv[])
       }
    }
 
+   free(pages_to_evict);
+   free(counts);
+
    printf("Algorithm:             %s\n", argv[4]);
    printf("Number of frames:      %d\n", numframes);
    printf("Total memory accesses: %d\n", i);
@@ -369,22 +382,76 @@ int fifo()
    return (current_index);
 }
 
-int opt_alg(struct frame_struct *head)
+/* Opt algorithm implementation */
+int opt_alg(struct frame_struct *head, int index, unsigned int *address_array, unsigned int accesses)
 {
    struct frame_struct *curr = head;
+   int i=0, j;
 
-   //Fill empty frames first
+   //If page that will never be used again is present, evict it
+   if (p2e_count > 0)
+   {
+      p2e_count--;
+      return pages_to_evict[p2e_count];
+   }
+
    while (curr->next)
    {
+      //Fill empty frames first
       if (!curr->pte_pointer)
       {
          return curr->frame_number;
       }
-      else
+
+      //If last calculated count for a frame has passed, reset it to -1
+      if (counts[i] < index)
       {
-         curr = curr->next;
+         counts[i] = -1;
+      }
+
+      //If the count for a page has not been calculated, calculate it
+      if (counts[i] == -1)
+      {
+         for (j=index; j < accesses; j++)
+         {
+            if (curr->virtual_address == address_array[j])
+            {
+               counts[i] = j; //Set count to when page will next be used
+               break;
+            }
+            else if (j+1 == accesses) //Page will no longer be used in the program
+            {
+               counts[i] = -1;
+               pages_to_evict[p2e_count] = curr->frame_number; //Add page to the stack of pages to be evicted
+               p2e_count++;
+            }
+         }
+      }
+      curr = curr->next;
+      i++;
+   }
+
+   //If page that will never be used again is present, evict it
+   if (p2e_count > 0)
+   {
+      p2e_count--;
+      return pages_to_evict[p2e_count];
+   }
+
+   //Loop through counts array to find page that will be used furthest in future and evict it
+   int longest = -1;
+   int evict_index = 0;
+   for (i=0; i < numframes; i++)
+   {
+      if (counts[i] > longest)
+      {
+         evict_index = i;
+         longest = counts[i];
       }
    }
+   counts[evict_index] = -1; //Clear evicted page's count
+
+   return evict_index;
 }
 
 /* Clock algorithm implementation */

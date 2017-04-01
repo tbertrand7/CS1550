@@ -67,7 +67,7 @@ struct frame_struct * handle_page_fault(unsigned int);
 
 // Page replacement algorithms
 int fifo_alg();
-int opt_alg(struct frame_struct *head);
+int opt_alg(struct frame_struct *head, int index, unsigned int *address_array, unsigned int accesses);
 int clock_alg(struct frame_struct *head);
 int nru_alg(struct frame_struct *head);
 int rand_alg(struct frame_struct *head);
