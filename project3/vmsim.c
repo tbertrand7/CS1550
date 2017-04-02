@@ -414,7 +414,9 @@ int opt_alg(struct frame_struct *head, int index, unsigned int *address_array, u
       {
          for (j=index; j < accesses; j++)
          {
-            if (curr->virtual_address == address_array[j])
+         	//Compare physical addresses of future instructions with the frames
+         	struct pte_32* temp = (struct pte_32*)handle_page_fault(address_array[j]);
+            if (curr->physical_address == temp->physical_address)
             {
                counts[i] = j; //Set count to when page will next be used
                break;
